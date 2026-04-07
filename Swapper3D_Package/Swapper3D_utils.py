@@ -270,12 +270,15 @@ def unload_insert(plugin):
     # retract filament
     # Send the G-code commands to prepare for swap
  #break any string connection between insert and main filament strand
-    gcode_commands = ["G92 E0 ;reset extrusion distance"
-                     ,f"G1 E-10 F300"]
-    plugin._printer.commands(gcode_commands)
-    gcode_commands = ["G92 E0 ;reset extrusion distance"
-                     ,f"G1 E{retractLengthAfterCut} F{retractSpeed}"]
-    plugin._printer.commands(gcode_commands)
+    if plugin.isPrintStarted:
+        gcode_commands = ["G92 E0 ;reset extrusion distance"
+                        ,f"G1 E-10 F300"]
+        plugin._printer.commands(gcode_commands)
+
+    if plugin.isPrintStarted:
+        gcode_commands = ["G92 E0 ;reset extrusion distance"
+                        ,f"G1 E{retractLengthAfterCut} F{retractSpeed}"]
+        plugin._printer.commands(gcode_commands)
 
 #wait for the retract to complete    
     #RetractDelay = int(lengthAdditionalCut)/(int(extrudeSpeedPaletteCuts)/60) + (10/(300/600))
