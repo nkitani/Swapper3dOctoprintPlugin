@@ -207,20 +207,22 @@ def unload_insert(plugin):
     #all these commands are sent to the printer at the same time
     #octoprint moves on but the printer tries to execute the commands
     #the first command is a delay/sleep/pause, which allow the Swapper3D to get a head start on the pulldown
-    gcode_commands = [f"G4 P{delayAfterExtrude}",
-                      "G92 E0 ;reset extrusion distance",
-                      f"G1 E{extrudeLengthLockingHeight} F{extrudeSpeedPulldown}"]
-    plugin._printer.commands(gcode_commands)
+    if plugin.isPrintStarted:  # 印刷中のみフィラメント押し出し
+        gcode_commands = [f"G4 P{delayAfterExtrude}",
+                          "G92 E0 ;reset extrusion distance",
+                          f"G1 E{extrudeLengthLockingHeight} F{extrudeSpeedPulldown}"]
+        plugin._printer.commands(gcode_commands)
   
     plugin._plugin_manager.send_plugin_message(plugin._identifier, dict(type="log", message=f"msDelayPerDegreeMovedDuringSwapPulldown: {msDelayPerDegreeMovedDuringSwapPulldown}"))
     perform_command(plugin, f"unload_pulldown_lockingheight{msDelayPerDegreeMovedDuringSwapPulldown}")
     
     # pulldown to cutting height
     # Extrude filament at the same time as the pulldown 
-    gcode_commands = [f"G4 P{delayAfterExtrude}",
-                      "G92 E0 ;reset extrusion distance",
-                      f"G1 E{extrudeLengthCuttingHeight} F{extrudeSpeedPulldown}"]
-    plugin._printer.commands(gcode_commands)
+    if plugin.isPrintStarted:  # 印刷中のみフィラメント押し出し
+        gcode_commands = [f"G4 P{delayAfterExtrude}",
+                          "G92 E0 ;reset extrusion distance",
+                          f"G1 E{extrudeLengthCuttingHeight} F{extrudeSpeedPulldown}"]
+        plugin._printer.commands(gcode_commands)
    
     plugin._plugin_manager.send_plugin_message(plugin._identifier, dict(type="log", message=f"msDelayPerDegreeMovedDuringSwapPulldown: {msDelayPerDegreeMovedDuringSwapPulldown}"))
     perform_command(plugin, f"unload_pulldown_cuttingheight{msDelayPerDegreeMovedDuringSwapPulldown}")
