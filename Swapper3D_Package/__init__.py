@@ -177,7 +177,7 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
                 self._plugin_manager.send_plugin_message(self._identifier, dict(type="log", message=f"Filament unload command sent while in Swap"))
                 self.SwapInProcess = False
                 self._printer.commands("@resume")
-                return
+                return (None,)
             
             # If the command is a tool change command (starts with "T")
             #and not during a Swap
@@ -186,12 +186,12 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
             and not self.SwapInProcess):
                 if not comm_instance.isOperational():
                     self._plugin_manager.send_plugin_message(self._identifier, dict(type="log", message=f"Printer is not connected"))
-                    return
+                    return (None,)
                 
                 if self.serial_conn is None:
                     # self._logger.info("Swapper3D is disconnected")
                     self._plugin_manager.send_plugin_message(self._identifier, dict(type="log", message=f"Swapper3D is disconnected"))
-                    return
+                    return (None,)
             
                 self._plugin_manager.send_plugin_message(self._identifier, dict(type="log", message=f"hook_gcode_queuing.Processing tool change cmd:{cmd}"))
                 # self._plugin_manager.send_plugin_message(self._identifier, dict(type="log", message=f"gcode: {gcode}"))
@@ -213,7 +213,7 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
                 and self.current_extruder is not None 
                 and self.current_extruder == self.next_extruder):
                     self._plugin_manager.send_plugin_message(self._identifier, dict(type="log", message=f"Current and next Tools are the same AND the initial load is complete. Skipping swap."))
-                    return None #make sure that the tool change doesn't happen. If it did the filament would be pulled, uncut, from the quickswap insert
+                    return (None,) #make sure that the tool change doesn't happen.
 
                 #Stop the Swap if the filament extuded 
                 #since the last swap is less than the minimum
@@ -222,7 +222,7 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
                 and self.current_extruder is not None 
                 and self.extrusionSinceLastSwap < MinExtrusionBeforeSwap):
                     self._plugin_manager.send_plugin_message(self._identifier, dict(type="log", message=f"Prevented swap because of too short extusion: {self.extrusionSinceLastSwap}"))
-                    return None #not enough extrusion to get the filament into the insert, so prevent this tool change, otherwise the filament will get pulled out and jam the print head
+                    return (None,) #not enough extrusion to get the filament into the insert
 
 
                 # Initialize current_z outside the try block
@@ -266,7 +266,7 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
                 thread.start()
                 
                 self._plugin_manager.send_plugin_message(self._identifier, dict(type="log", message=f"T{self.next_extruder} command intercepted"))
-                return None #prevent the T command from being issued to the printer. It will be sent from the swap method
+                return (None,) #prevent the T command from being issued to the printer. It will be sent from the swap method
                 
             if  (not self.SwapInProcess
                 and ("M73 Q100" in cmd
@@ -291,7 +291,7 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
                 
                 thread = threading.Thread(target=PreparePrinterForSwap, args=(self, current_z, HomeAxis, "readyForFilamentUnload")) 
                 thread.start()
-                return None #"Filament Unload command intercepted" #prevent the unload command from being sent to the printer. It will be sent from the unload command
+                return (None,) #prevent the unload command from being sent to the printer
                 
 
         except Exception as e:
