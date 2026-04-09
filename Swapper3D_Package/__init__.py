@@ -51,8 +51,8 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
             self.isPrintStarted = True
             self.is_print_done = False
 
-        if event == "PrintDone":
-            # The print has finished
+        if event == "PrintDone", "PrintFailed", "PrintCancelled":
+            # The print has finished or failed or cancelled.
             self._logger.info("The print job has finished")
             self.isPrintStarted = False
             self.hasStartGcodeRun = False
@@ -60,6 +60,9 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
             
         if event == "Connected":
             self._logger.info("Printer connection established.")
+            self.isPrintStarted = False
+            self.hasStartGcodeRun = False
+            self.SwapInProcess = False
             # Take other actions as necessary
             self.runStartGcode();
             
