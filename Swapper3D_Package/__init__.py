@@ -51,7 +51,7 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
             self.isPrintStarted = True
             self.is_print_done = False
 
-        if event in "PrintDone", "PrintFailed", "PrintCancelled":
+        if event in ("PrintDone", "PrintFailed", "PrintCancelled"):
             # The print has finished or failed or cancelled.
             self._logger.info("The print job has finished")
             self.isPrintStarted = False
