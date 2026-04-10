@@ -50,6 +50,11 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
             self._logger.info("Created a new log file at start of print: " + self.log_file_path)
             self.isPrintStarted = True
             self.is_print_done = False
+            self.current_extruder = None
+            self.InitialLoadComplete = False
+            self.insertLoaded = False
+            self.extrusionSinceLastSwap = 0
+            self.SwapInProcess = False
 
         if event in ("PrintDone", "PrintFailed", "PrintCancelled"):
             # The print has finished or failed or cancelled.
