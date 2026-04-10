@@ -78,6 +78,11 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
             self.SwapInProcess = False
             # Take other actions as necessary
             self.runStartGcode();
+            if self.serial_conn is not None:
+                self._plugin_manager.send_plugin_message(
+                    self._identifier,
+                    dict(type="connectionState", message="Ready to Swap!")
+                )
             
     #revised on Sept 18th 2024 to handle swapper connection failure
     def on_after_startup(self):
