@@ -53,11 +53,19 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
 
         if event in ("PrintDone", "PrintFailed", "PrintCancelled"):
             # The print has finished or failed or cancelled.
-            self._logger.info("The print job has finished")
+            self._logger.info("Print ended: " + event)
             self.isPrintStarted = False
             self.hasStartGcodeRun = False
             self.is_print_done = True
-            
+            self.SwapInProcess = False
+            # Return the servo to the park position
+            if self.serial_conn is not None:
+                self._plugin_manager.send_plugin_message(
+                    self._identifier,
+                    dict(type="log", message=f"Print ended ({event}): homing tool rotate for safety")
+                )
+                perform_command(self, "hometoolrotate", False)
+        
         if event == "Connected":
             self._logger.info("Printer connection established.")
             self.isPrintStarted = False
