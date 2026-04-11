@@ -1,4 +1,5 @@
 # Swapper3D_Octoprint_Plugin
+## Unofficial improved version for MK3S+(3.14.0)/MMU2S(3.0.2)
 The Octoprint plugin for synchronizing a 3D printer with the Swapper3D
 
 
