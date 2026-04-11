@@ -64,13 +64,15 @@ class Swapper3DPlugin(octoprint.plugin.StartupPlugin,
             self.is_print_done = True
             self.SwapInProcess = False
             # Return the servo to the park position
-            if self.serial_conn is not None:
+            try:
                 self._plugin_manager.send_plugin_message(
                     self._identifier,
                     dict(type="log", message=f"Print ended ({event}): homing tool rotate for safety")
                 )
                 perform_command(self, "hometoolrotate", False)
-        
+            except Exception as e:
+                self._logger.error(f"Failed to home tool rotate on print end: {str(e)}")
+
         if event == "Connected":
             self._logger.info("Printer connection established.")
             self.isPrintStarted = False
