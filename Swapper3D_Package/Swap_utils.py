@@ -136,9 +136,9 @@ def swap(plugin):
     #send WAIT for temp heat up
     #signal temp heat up complete with M117/M118
     gcode_commands =[
+                     f"M109 S{plugin.currentTargetTemp}", #Wait for heat to stabilize
                      "M310 S0", #Disable MPC around tool change to prevent THERMAL ANOMALY
                      f"T{plugin.next_extruder}",
-                     f"M109 S{plugin.currentTargetTemp}", #Wait for heat to stabilize
                      "M310 S1", #Enable MPC
                      "G4",
                      "G92 E0; reset the extruder position",
